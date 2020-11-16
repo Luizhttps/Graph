@@ -10,7 +10,6 @@ class Grafo{
 		int **matriz;
 		int **matrizT;
 		Grafo ();
-        void leArquivo(char[]);
 		void criaGrafo();				  //1
 		void insereAresta(int, int, int); //2
 		bool verificaAresta(int, int);	  //3
@@ -23,43 +22,49 @@ class Grafo{
 		void limpaMatriz(int**);
 };
 
-void Grafo::leArquivo(char fileName[]){
-    FILE *fp;
-    fp= fopen(fileName,"r");
-
-		fscanf(fp,"%i",&tamanhoG);
-		//
-		criaGrafo();
-		//
-        while(!feof(fp)){
-            for(int i=0;i<tamanhoG;i++){
-                for(int j=0;j<tamanhoG;j++){
-                    fscanf(fp,"%i",&matriz[i][j]);
-                }
-            }
-        }
-}
-
 int main(){
 
 	Grafo G;
 
-    char nomeArquivo[] = {"arq01.txt"};
+	ifstream arquivo;
+    arquivo.open("Arquivo01.txt");
 
-	G.leArquivo(nomeArquivo);
+    if (!arquivo.is_open())
+        cout<<"File is not found!"<<endl;
+    else{
+		arquivo >> G.tamanhoG;
+		//
+		G.criaGrafo();
+		//
+		char aux;
+		int i=0, j=0;
+    	while (i<G.tamanhoG) {
+	    	while (j<G.tamanhoG) {
+				arquivo.get(aux);
+                if(aux!=',' && aux!=' ' && aux!= '\n')
+    	    		G.insereAresta(aux-'0', i, j++);
+	    	}
+        	j=0;
+        	i++;
+    	}
+	}
 	//
 	cout<<"Numero de vertices: "<<G.numeroVertices()<<endl;
+
 	//
 	int x=0, y=2;
 	if(G.verificaAresta(x, y))
 		cout<<"Aresta {"<<x<<","<<y<<"} existe no Grafo."<<endl;
 	else
 		cout<<"Aresta {"<<x<<","<<y<<"} nao existe no Grafo."<<endl;
+	
 	//
 	cout<<endl<<"Grafo Principal: "<<endl;
 	G.mostraGrafo(G.matriz);
+
 	//
 	G.verticesAdjacente(G.matriz, 3);
+
 	//
 	x=0; y=1;
 	cout<<"Retirando Aresta: {"<<x<<","<<y<<"}"<<endl;
@@ -67,16 +72,20 @@ int main(){
 	x=1; y=0;
 	cout<<"Retirando Aresta: {"<<x<<","<<y<<"}"<<endl;
 	G.retiraAresta(x,y);
+
 	//
 	cout<<endl<<"Grafo Principal: "<<endl;
 	G.mostraGrafo(G.matriz);
+
 	//
 	G.grafoTransposto(G.matriz);
 	cout<<endl<<"Grafo Transposto: "<<endl;
 	G.mostraGrafo(G.matrizT);
+
 	//
 	cout<<endl;
 	G.arestaMenorPeso(G.matriz);
+
 	//
 	G.limpaMatriz(G.matriz);
 	G.limpaMatriz(G.matrizT);
